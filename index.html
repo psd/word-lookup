@@ -1,0 +1,30 @@
+<input type=text id=regex size=10>
+<button id=search>search</button>
+<ul id="list"></ul>
+<script defer>
+
+fetch("words")
+   .then(response => response.text())
+   .then((response) => {
+   	words = response.split(/\n/)
+
+	function lookup() {
+	    let regex = document.getElementById("regex").value;
+	    let list = document.getElementById("list");
+
+	    list.innerHTML = ""
+
+	    words.forEach((word)=>{
+		if (word.match(regex)) {
+		    let li = document.createElement("li");
+		    li.innerText = word;
+		    list.appendChild(li);
+		}
+	    })
+	}
+
+	document.getElementById("search").addEventListener("click", lookup);
+   })
+   .catch(err => console.log(err))
+
+</script>
