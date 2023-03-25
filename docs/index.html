@@ -2,11 +2,34 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+    font-family: sans-serif;
+    font-size: 32px;
+}
+body {
+    margin: 1em;
+}
+input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    font-size: 32px;
+    display: block;
+    margin: 0;
+    padding: 10px;
+    height: 40px;
+    line-height: 40px;
+    border: 2px solid #bbb;
+}
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+</style>
 </head>
 <body>
-<input type=text id=regex size=10>
-<button id=search>search</button>
-<ul id="list"></ul>
+    <input type=text id=regex size=10>
+    <ul id="list"></ul>
 <script defer>
 
 fetch("words")
@@ -17,6 +40,8 @@ fetch("words")
 	function lookup() {
 	    let regex = document.getElementById("regex").value;
 	    let list = document.getElementById("list");
+
+	    regex = regex.toLowerCase()
 
 	    list.innerHTML = ""
 
@@ -29,7 +54,6 @@ fetch("words")
 	    })
 	}
 
-	document.getElementById("search").addEventListener("click", lookup);
 	window.addEventListener('keyup', function(event) {
 	    if (event.keyCode === 13) {
 	        lookup()
