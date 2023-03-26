@@ -30,9 +30,27 @@ ul {
 </style>
 </head>
 <body>
-    <input type=text id=regex size=10 value="^......$">
-    <ul id="list"></ul>
+    <input type=text id=search size=10 value="^......$">
+    <ul id="results"></ul>
 <script defer>
+if (!Set.prototype.union) {
+    Set.prototype.union = function(a) {
+        return new Set([...this, ...a]);
+    }
+}
+
+if (!Set.prototype.intersection) {
+    Set.prototype.intersection = function(a) {
+        return new Set([...this].filter(x => a.has(x)));
+    }
+}
+
+if (!Set.prototype.equal) {
+    Set.prototype.equal = function(a) {
+	return this.size === a.size && [...this].every(value => a.has(value));
+    }
+}
+
 
 fetch("words")
    .then(response => response.text())
@@ -40,19 +58,46 @@ fetch("words")
    	words = response.split(/\n/)
 
 	function lookup() {
-	    let regex = document.getElementById("regex").value;
-	    let list = document.getElementById("list");
+	    // parse search string
+	    let search = document.getElementById("search").value.toLowerCase();
+	    let includes = new Set()
+	    let excludes = new Set()
+	    let regex = ""
 
-	    regex = regex.toLowerCase()
+	    search.split(" ").forEach((leg)=>{
+	    	if (leg) {
+		    if (leg.startsWith("+")) {
+			includes = includes.union(new Set(leg.slice(1)));
+		    } else if (leg.startsWith("-")) {
+			excludes = excludes.union(new Set(leg.slice(1)));
+		    } else {
+			regex = leg
+		    }
+		}
+	    })
 
+	    // search for words
+	    let list = document.getElementById("results");
 	    list.innerHTML = ""
 
 	    words.forEach((word)=>{
-		if (word.match(regex)) {
-		    let li = document.createElement("li");
-		    li.innerText = word;
-		    list.appendChild(li);
+	        let letters = new Set(word)
+
+		if (includes.size && !letters.intersection(includes).equal(includes)) {
+		    return
 		}
+
+		if (excludes.size && excludes.intersection(letters).size) {
+		    return
+		}
+
+		if (!word.match(regex)) {
+		    return
+		}
+
+	        let li = document.createElement("li");
+	        li.innerText = word;
+	        list.appendChild(li);
 	    })
 	}
 
