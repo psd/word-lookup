@@ -62,6 +62,7 @@ fetch("words")
 	    let search = document.getElementById("search").value.toLowerCase();
 	    let includes = new Set()
 	    let excludes = new Set()
+	    let len = 0
 	    let min = 0
 	    let max = 0
 	    let regex = ""
@@ -72,6 +73,8 @@ fetch("words")
 			includes = includes.union(new Set(leg.slice(1)));
 		    } else if (leg.startsWith("-")) {
 			excludes = excludes.union(new Set(leg.slice(1)));
+		    } else if (leg.startsWith("=")) {
+		        len = Number(leg.slice(1))
 		    } else if (leg.startsWith(">")) {
 		    	min = Number(leg.slice(1))
 		    } else if (leg.startsWith("<")) {
@@ -88,6 +91,10 @@ fetch("words")
 
 	    words.forEach((word)=>{
 	        let letters = new Set(word)
+
+		if (len && word.length != len) {
+		    return
+		}
 
 		if (min && word.length < min) {
 		    return
