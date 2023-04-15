@@ -4,16 +4,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body {
-    font-family: monospace;
-    font-size: 32px;
     font-weight: 600;
+    margin: 0 1em;
 }
-body {
-    margin: 1em;
-}
-input {
-    -webkit-appearance: none;
-    -moz-appearance: none;
+
+#search {
+    font-family: monospace;
     font-size: 32px;
     font-weight: 600;
     display: block;
@@ -23,15 +19,68 @@ input {
     line-height: 40px;
     border: 4px solid #888;
     border-radius: 5px;
+    font-family: monospace;
+    font-size: 32px;
 }
+
 ul {
     list-style-type: none;
     padding: 0;
 }
+
+header {
+    width: 100%;
+}
+
+#helpbox {
+    margin: 1em 0;
+}
+
+#help {
+    accent-color: #000;
+}
+
+#help + .message {
+    display: none;
+    opacity: 0;
+    transition: visibility 0s linear 0.33s, opacity 0.33s linear;
+}
+    
+#help:checked + .message {
+    display: block;
+    opacity: 1;
+    transition-delay: 0s;
+}
 </style>
 </head>
 <body>
-    <input type=text id=search size=10 value="^......$">
+    <header id=helpbox>
+        <label for="help">
+	    <input type="checkbox" name="help" id=help />
+	    help
+            <div class="message">
+		<p>Find dictionary words"
+	        <dl>
+	        <dt>cd</dt>
+		<dd>containing "cd"</dd>
+	        <dt>ey$ =5</dt>
+		<dd>ending in "ey" which are 5 letters long</dd>
+	        <dt>^ex &lt;6</dt>
+		<dd>beginning with "ex"</dd>
+	        <dt>ey$ &lt;6</dt>
+		<dd>ending in "ey" which are 6 or fewer letters long</dd>
+	        <dt>ey$ &lt;6 &gt;4</dt>
+		<dd>ending in "ey" which are 4, 5 or 6 letters long</dd>
+	        <dt>ey$ +kd</dt>
+		<dd>ending in "ey", containing k and d</dd>
+	        <dt>ey$ -of</dt>
+		<dd>ending in "ey", not containing o or f</dd>
+	        </dl>
+	    </div>
+	</label>
+    </header>
+
+    <input type="text" id="search" size="10" value="^......$ <6">
     <ul id="results"></ul>
 <script defer>
 if (!Set.prototype.union) {
