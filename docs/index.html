@@ -51,6 +51,12 @@ header {
     opacity: 1;
     transition-delay: 0s;
 }
+
+.score {
+    font-family: monospace;
+    color: #888;
+}
+
 </style>
 </head>
 <body>
@@ -102,6 +108,31 @@ if (!Set.prototype.equal) {
 	return this.size === a.size && [...this].every(value => a.has(value));
     }
 }
+
+score_letters = {
+    1: "aeioulnstr",
+    2: "dg",
+    3: "bcmp",
+    4: "fhvwy",
+    5: "k",
+    8: "jx",
+    10: "qz"
+}
+letter_score = {}
+for (const [score, letters] of Object.entries(score_letters)) {
+    for (var i = 0; i < letters.length; i++) {
+	letter_score[letters[i]] = score
+    }
+}
+
+function score_word(word) {
+    var score = 0
+    for (var i = 0; i < word.length; i++) {
+	score = score + parseInt(letter_score[word[i]])
+    }
+    return score
+}
+
 
 fetch("words")
    .then(response => response.text())
@@ -201,7 +232,13 @@ fetch("words")
 		    }
 
 		    let li = document.createElement("li");
-		    li.innerText = word;
+		    let span = document.createElement("span");
+		    let score = score_word(word)
+
+		    li.innerText = word + " "
+		    li.appendChild(span)
+		    span.innerText = score
+		    span.className = "score"
 		    div.appendChild(li);
 		})
 	    })
