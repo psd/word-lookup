@@ -28,7 +28,7 @@ ul {
     padding: 0;
 }
 
-header {
+aside {
     width: 100%;
 }
 
@@ -60,7 +60,9 @@ header {
 </style>
 </head>
 <body>
-    <header id=helpbox>
+    <input type="text" id="search" size="10" value="^......$">
+    <div id="results"></div>
+    <aside id=helpbox>
         <label for="help">
 	    <input type="checkbox" name="help" id=help />
 	    help
@@ -86,10 +88,7 @@ header {
 	        </dl>
 	    </div>
 	</label>
-    </header>
-
-    <input type="text" id="search" size="10" value="^......$">
-    <div id="results"></div>
+    </aside>
 <script defer>
 if (!Set.prototype.union) {
     Set.prototype.union = function(a) {
