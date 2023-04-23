@@ -64,7 +64,7 @@ aside {
 </style>
 </head>
 <body>
-    <input type="text" id="search" value="^......$">
+    <input type="text" id="search" value="^.#x$ ^l#ng$">
     <div id="results"></div>
     <aside id=helpbox>
         <label for="help">
@@ -137,19 +137,38 @@ function score_word(word) {
 }
 
 
+function print_results(results) {
+    let div = document.getElementById("results");
+    div.innerHTML = ""
+
+    let ul = document.createElement("ul");
+    div.appendChild(ul);
+
+    results.forEach((result)=>{
+	let li = document.createElement("li");
+	let span = document.createElement("span");
+
+	li.innerText = result.word + " "
+	li.appendChild(span)
+
+	span.innerText = result.score
+	span.className = "score"
+	ul.appendChild(li);
+    })
+}
+
+
 fetch("words")
    .then(response => response.text())
    .then((response) => {
-   	words = response.split(/\n/)
+   	let words = response.split(/\n/)
 
-	function lookup() {
-	    // parse search string
-	    let search = document.getElementById("search").value.toLowerCase();
-
+	function lookup(search) {
 	    class Pattern {
 	        constructor() {
 		    this.includes = new Set()
 		    this.excludes = new Set()
+		    this.intersects = new Set()
 	            this.len = 0
 		    this.min = 0
 		    this.max = 0
@@ -160,6 +179,7 @@ fetch("words")
 	    let patterns = [new Pattern()]
 	    let n = 0
 
+	    search = search.toLowerCase()
 	    search.split(" ").forEach((leg)=>{
 	    	if (leg) {
 		    if (leg.startsWith("+")) {
@@ -182,24 +202,13 @@ fetch("words")
 		}
 	    })
 
-	    // search for words
-	    let div = document.getElementById("results");
-	    div.innerHTML = ""
-	    intersect = false
-	    intersect_set = new Set()
+	    let intersect = false
+	    let results = []
 
 	    patterns.forEach((pattern)=>{
-		let list = document.createElement("ul");
-		div.appendChild(list);
-
 		if (pattern.regex.includes("#")) {
-		    if (!intersect) {
-			pattern.regex = pattern.regex.replace("#", "(.)")
-			intersect = true
-		    } else {
-			s = Array.from(intersect_set).join('')
-			pattern.regex = pattern.regex.replace("#", "([" + s + "])")
-		    }
+		    pattern.regex = pattern.regex.replace("#", "(.)")
+		    intersect = true
 		}
 
 		words.forEach((word)=>{
@@ -230,25 +239,38 @@ fetch("words")
 			return
 		    }
 
-		    if (intersect) {
-			intesect_set = intersect_set.add(matches[1])
+		    result = {
+			word: word,
+		    	score: score_word(word),
+			intersect: ''
 		    }
 
-		    let li = document.createElement("li");
-		    let span = document.createElement("span");
-		    let score = score_word(word)
+		    if (intersect) {
+			result.intersect = matches[1]
+			pattern.intersects.add(result.intersect)
+		    }
 
-		    li.innerText = word + " "
-		    li.appendChild(span)
-		    span.innerText = score
-		    span.className = "score"
-		    div.appendChild(li);
+		    results.push(result)
 		})
 	    })
+
+	    if (intersect) {
+		let intersects = null
+		patterns.forEach((pattern)=>{
+		    if (intersects === null) {
+			intersects = pattern.intersects
+		    } else {
+		        intersects = intersects.intersection(pattern.intersects)
+		    }
+		})
+		results = results.filter(result => intersects.has(result.intersect))
+	    }
+
+	    print_results(results)
         }
 	window.addEventListener('keyup', function(event) {
 	    if (event.keyCode === 13) {
-		lookup()
+		lookup(document.getElementById("search").value)
 	    }
 	});
    })
