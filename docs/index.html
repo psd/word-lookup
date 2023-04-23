@@ -144,19 +144,21 @@ function print_results(results) {
     let div = document.getElementById("results");
     div.innerHTML = ""
 
-    let ul = document.createElement("ul");
-    div.appendChild(ul);
+    Object.keys(results).forEach((intersect)=>{
+	let ul = document.createElement("ul");
+	div.appendChild(ul);
 
-    results.forEach((result)=>{
-	let li = document.createElement("li");
-	let span = document.createElement("span");
+	results[intersect].forEach((result)=>{
+	    let li = document.createElement("li");
+	    let span = document.createElement("span");
 
-	li.innerText = result.word + " "
-	li.appendChild(span)
+	    li.innerText = result.word + " "
+	    li.appendChild(span)
 
-	span.innerText = result.score
-	span.className = "score"
-	ul.appendChild(li);
+	    span.innerText = result.score
+	    span.className = "score"
+	    ul.appendChild(li);
+	})
     })
 }
 
@@ -245,7 +247,8 @@ fetch("words")
 		    result = {
 			word: word,
 		    	score: score_word(word),
-			intersect: ''
+			intersect: '',
+			regex: pattern.regex
 		    }
 
 		    if (intersect) {
@@ -269,7 +272,15 @@ fetch("words")
 		results = results.filter(result => intersects.has(result.intersect))
 	    }
 
-	    print_results(results)
+	    ordered = {}
+	    results.forEach((result)=>{
+		if (!(result.intersect in ordered)) {
+		    ordered[result.intersect] = []
+		}
+	        ordered[result.intersect].push(result)
+	    })
+
+	    print_results(ordered)
         }
 	window.addEventListener('keyup', function(event) {
 	    if (event.keyCode === 13) {
