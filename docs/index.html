@@ -87,11 +87,13 @@ aside {
 	        <dt>ey$ &lt;6 &gt;4</dt>
 		<dd>ending in "ey" which are 4, 5 or 6 letters long</dd>
 	        <dt>ey$ +kd</dt>
-		<dd>ending in "ey", containing k and d</dd>
+		<dd>ending in "ey", including k and d</dd>
 	        <dt>ey$ -of</dt>
-		<dd>ending in "ey", not containing o or f</dd>
+		<dd>ending in "ey", excluding o or f</dd>
+	        <dt>ay$ ~shmay</dt>
+		<dd>ending in "y", containing s h, m, a or y</dd>
 		<dt>^l#x$ f#x$</dt>
-		<dd>which intersect</dd>
+		<dd>pairs of words which intersect</dd>
 	        </dl>
 	    </div>
 	</label>
@@ -116,9 +118,9 @@ if (!Set.prototype.equal) {
 }
 
 score_letters = {
-    1: "aâåeèéêioóöuûlnñstr",
+    1: "aeioulnstr",
     2: "dg",
-    3: "bcçmp",
+    3: "bcmp",
     4: "fhvwy",
     5: "k",
     8: "jx",
@@ -174,6 +176,7 @@ fetch("words")
 		    this.includes = new Set()
 		    this.excludes = new Set()
 		    this.intersects = new Set()
+		    this.containing = new Set()
 	            this.len = 0
 		    this.min = 0
 		    this.max = 0
@@ -191,6 +194,8 @@ fetch("words")
 			patterns[n].includes = patterns[n].includes.union(new Set(leg.slice(1)));
 		    } else if (leg.startsWith("-")) {
 			patterns[n].excludes = patterns[n].excludes.union(new Set(leg.slice(1)));
+		    } else if (leg.startsWith("~")) {
+			patterns[n].containing = patterns[n].containing.union(new Set(leg.slice(1)));
 		    } else if (leg.startsWith("=")) {
 		        patterns[n].len = Number(leg.slice(1))
 		    } else if (leg.startsWith(">")) {
@@ -236,6 +241,10 @@ fetch("words")
 		    }
 
 		    if (pattern.excludes.size && pattern.excludes.intersection(letters).size) {
+			return
+		    }
+
+		    if (pattern.containing.size && !letters.intersection(pattern.containing).equal(letters)) {
 			return
 		    }
 
