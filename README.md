@@ -15,7 +15,7 @@ Search for word game words using regex expressions and sets
 <dd>ending in "ey", including k and d</dd>
 <dt>ey$ -of</dt>
 <dd>ending in "ey", excluding o or f</dd>
-<dt>ay$ ~shmay</dt>
+<dt>y$ ~shmay</dt>
 <dd>ending in "y", containing s h, m, a or y</dd>
 <dt>^l#x$ f#x$</dt>
 <dd>pairs of words which intersect</dd>
